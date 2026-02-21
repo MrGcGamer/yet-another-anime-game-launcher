@@ -111,6 +111,8 @@ export const th_TH: typeof zh_CN = {
   SETTING_BLOCK_NET: "Launch Fix(block hosts)",
   SETTING_LICENSES: en.SETTING_LICENSES, // TODO: Translate
   SETTING_ENABLE_HDR: "เปิดใช้ HDR",
+  SETTING_STEAM_STUB: "เปิดใช้ Steam Stubs", // TODO: Translate
+  SETTING_CUSTOM_ENVS: en.SETTING_CUSTOM_ENVS, // TODO: Translate
 
   SETTING_PROXY_ENABLED: en.SETTING_PROXY_ENABLED, // TODO: Translate
   SETTING_PROXY_HOST: en.SETTING_PROXY_HOST, // TODO: Translate

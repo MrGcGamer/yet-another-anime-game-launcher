@@ -45,6 +45,7 @@ import createSteamPatch from "./config/steam-patch";
 import createBlockNet from "./config/block-net";
 import createResolution from "./config/resolution";
 import { createEnableHDRConfig } from "./config/enable-hdr";
+import { createEnableSteamStub } from "./config/steam-stub";
 import { getGameVersion } from "../unity";
 import {
   VoicePackNames,
@@ -301,6 +302,7 @@ export async function createHK4EChannelClient({
       const [BN] = await createBlockNet({ locale, config });
       const [HDR] = await createEnableHDRConfig({ locale, config });
       const [RES] = await createResolution({ locale, config });
+      const [STEAM] = await createEnableSteamStub({ locale, config });
 
       return function () {
         return [
@@ -312,6 +314,7 @@ export async function createHK4EChannelClient({
           <SP />,
           <BN />,
           <RES />,
+          <STEAM />,
         ];
       };
     },

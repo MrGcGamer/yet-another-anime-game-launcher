@@ -112,6 +112,8 @@ export const es_ES: typeof zh_CN = {
   SETTING_LICENSES: "Licencias",
 
   SETTING_ENABLE_HDR: "Activar HDR",
+  SETTING_STEAM_STUB: "Activar Steam Stubs", // TODO: Translate
+  SETTING_CUSTOM_ENVS: en.SETTING_CUSTOM_ENVS, // TODO: Translate
 
   SETTING_PROXY_ENABLED: "Activar Proxy HTTP",
   SETTING_PROXY_HOST: "Host del Proxy HTTP",

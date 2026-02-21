@@ -106,21 +106,30 @@ export async function* launchGameProgram({
     await applyHDRRegistry({ wine, server });
   }
 
-  if (config.resolutionCustom) {
-    await applyResolutionRegistry(wine, server, config);
+  if (!config.hk4eEnableSteamStub) {
+    const cmd = `@echo off
+    cd "%~dp0"
+    copy "${wine.toWinePath(
+        join(gameDir, atob("SG9Zb0tQcm90ZWN0LnN5cw=="))
+      )}" "%WINDIR%\\system32\\"
+    cd /d "${wine.toWinePath(gameDir)}"
+    ${await (async () => {
+      if (config.fpsUnlock !== "default") {
+        return `"${wine.toWinePath(
+          resolve("./fpsunlock/genshin-force-fps.exe")
+        )}" -f ${config.fpsUnlock} -o "${wine.toWinePath(
+          join(gameDir, gameExecutable)
+        )}"`;
+      } else {
+        return `"${wine.toWinePath(join(gameDir, gameExecutable))}"${
+          /* workaround 10351-4001 */
+          " -platform_type CLOUD_THIRD_PARTY_PC -is_cloud 1"
+        }`;
+      }
+    })()}`;
+    await writeFile(resolve("config.bat"), cmd);
   }
-  await wine.waitUntilServerOff();
 
-  const cmd = `@echo off
-cd "%~dp0"
-copy "${wine.toWinePath(
-    join(gameDir, atob("SG9Zb0tQcm90ZWN0LnN5cw=="))
-  )}" "%WINDIR%\\system32\\"
-cd /d "${wine.toWinePath(gameDir)}"
-"${wine.toWinePath(
-    join(gameDir, gameExecutable)
-  )}" -platform_type CLOUD_THIRD_PARTY_PC -is_cloud 1`;
-  await writeFile(resolve("config.bat"), cmd);
   yield* patchProgram(gameDir, wine, server, config);
   await mkdirp(resolve("./logs"));
   const yaaglDir = resolve("./");
@@ -161,32 +170,69 @@ cd /d "${wine.toWinePath(gameDir)}"
       );
     }
 
+    const env = {
+      MTL_HUD_ENABLED: config.metalHud ? "1" : "",
+      ...(wine.attributes.renderBackend == "gptk"
+        ? {
+            WINEDLLPATH_PREPEND: wine.attributes.crossover
+              ? join(CROSSOVER_RESOURCE, "lib64/apple_gptk/wine")
+              : "",
+          }
+        : {
+            WINEDLLOVERRIDES: "d3d11,dxgi=n,b",
+          }),
+      ...(wine.attributes.renderBackend == "dxvk"
+        ? {
+            DXVK_ASYNC: config.dxvkAsync ? "1" : "",
+            ...(config.dxvkHud == ""
+              ? {}
+              : {
+                  DXVK_HUD: config.dxvkHud,
+                }),
+            DXVK_STATE_CACHE_PATH: yaaglDir,
+            DXVK_LOG_PATH: yaaglDir,
+            DXVK_CONFIG_FILE: join(yaaglDir, "dxvk.conf"),
+            MVK_ALLOW_METAL_FENCES: "1",
+          }
+        : {}),
+      ...(wine.attributes.renderBackend == "dxmt"
+        ? {
+            WINEMSYNC: "1",
+            DXMT_LOG_PATH: yaaglDir,
+            DXMT_CONFIG: "d3d11.preferredMaxFrameRate=60;",
+            DXMT_CONFIG_FILE: join(yaaglDir, "dxmt.conf"),
+            GST_PLUGIN_FEATURE_RANK: "atdec:MAX,avdec_h264:MAX",
+          }
+        : {
+            WINEESYNC: "1",
+          }),
+      ...(config.proxyEnabled
+        ? {
+            HTTP_PROXY: config.proxyHost,
+            HTTPS_PROXY: config.proxyHost,
+          }
+        : {}),
+      ...(config.customENVs
+        ? config.customENVs.split(" ").reduce<{ [key: string]: string }>((acc, pair) => {
+            const [key, value] = pair.split("=");
+            acc[key] = value;
+            return acc;
+          }, {})
+        : {}),
+    };
+
+    let program = "cmd";
+    let args = ["/c", `${wine.toWinePath(resolve("./config.bat"))}`];
+
+    if (config.hk4eEnableSteamStub) {
+      program = "C:\\windows\\system32\\steam.exe";
+      args = [wine.toWinePath(join(gameDir, gameExecutable))];
+    }
+
     await wine.exec2(
-      config.steamPatch ? "C:\\windows\\system32\\steam.exe" : "cmd",
-      config.steamPatch
-        ? [wine.toWinePath(join(gameDir, gameExecutable))]
-        : ["/c", `${wine.toWinePath(resolve("./config.bat"))} `],
-      {
-        MTL_HUD_ENABLED: config.metalHud ? "1" : "",
-        WINEDLLOVERRIDES: "d3d11,dxgi=n,b",
-        ...(wine.attributes.renderBackend == "dxmt"
-          ? {
-              WINEMSYNC: "1",
-              DXMT_LOG_PATH: yaaglDir,
-              DXMT_CONFIG: "d3d11.preferredMaxFrameRate=60;",
-              DXMT_CONFIG_FILE: join(yaaglDir, "dxmt.conf"),
-              GST_PLUGIN_FEATURE_RANK: "atdec:MAX,avdec_h264:MAX",
-            }
-          : {
-              WINEESYNC: "1",
-            }),
-        ...(config.proxyEnabled
-          ? {
-              HTTP_PROXY: config.proxyHost,
-              HTTPS_PROXY: config.proxyHost,
-            }
-          : {}),
-      },
+      program,
+      args,
+      env,
       logfile
     );
     await wine.waitUntilServerOff();
@@ -202,7 +248,7 @@ cd /d "${wine.toWinePath(gameDir)}"
   }
 
   // await removeFile(resolve("bWh5cHJvdDJfcnVubmluZy5yZWcK.reg"));
-  await removeFile(resolve("config.bat"));
+  if (!config.hk4eEnableSteamStub) await removeFile(resolve("config.bat"));
   yield ["setStateText", "REVERT_PATCHING"];
   yield* patchRevertProgram(gameDir, wine, server, config);
 }

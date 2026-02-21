@@ -107,6 +107,8 @@ export const zh_CN = {
   SETTING_BLOCK_NET: "Launch Fix(block hosts)",
   SETTING_LICENSES: "Licenses", // TODO: Translate
   SETTING_ENABLE_HDR: "启用 HDR",
+  SETTING_STEAM_STUB: "启用 Steam Stubs", // TODO: Translate
+  SETTING_CUSTOM_ENVS: "Custom Environment Variables", // TODO: Translate
 
   SETTING_PROXY_ENABLED: "Enable HTTP Proxy", // TODO: Translate
   SETTING_PROXY_HOST: "HTTP Proxy Host", // TODO: Translate

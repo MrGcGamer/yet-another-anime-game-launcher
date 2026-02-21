@@ -113,6 +113,8 @@ export const ko_KR: typeof zh_CN = {
   SETTING_BLOCK_NET: "게임실행 문제해결(hosts 수정)",
   SETTING_LICENSES: en.SETTING_LICENSES, // TODO: Translate
   SETTING_ENABLE_HDR: "HDR 활성화",
+  SETTING_STEAM_STUB: "Steam Stubs 활성화", // TODO: Translate
+  SETTING_CUSTOM_ENVS: en.SETTING_CUSTOM_ENVS, // TODO: Translate
 
   SETTING_PROXY_ENABLED: en.SETTING_PROXY_ENABLED, // TODO: Translate
   SETTING_PROXY_HOST: en.SETTING_PROXY_HOST, // TODO: Translate

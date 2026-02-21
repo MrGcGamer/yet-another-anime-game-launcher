@@ -113,6 +113,8 @@ export const ru_RU: typeof zh_CN = {
   SETTING_LICENSES: en.SETTING_LICENSES, // TODO: Translate
 
   SETTING_ENABLE_HDR: "Включить HDR",
+  SETTING_STEAM_STUB: "Включить Steam Stubs", // TODO: Translate
+  SETTING_CUSTOM_ENVS: en.SETTING_CUSTOM_ENVS, // TODO: Translate
 
   SETTING_PROXY_ENABLED: en.SETTING_PROXY_ENABLED, // TODO: Translate
   SETTING_PROXY_HOST: en.SETTING_PROXY_HOST, // TODO: Translate

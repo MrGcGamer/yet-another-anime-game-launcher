@@ -112,6 +112,8 @@ export const en: typeof zh_CN = {
   SETTING_BLOCK_NET: "Launch Fix(block hosts)",
   SETTING_LICENSES: "Licenses",
   SETTING_ENABLE_HDR: "Enable HDR",
+  SETTING_STEAM_STUB: "Enable Steam Stubs",
+  SETTING_CUSTOM_ENVS: "Custom Environment Variables",
 
   SETTING_PROXY_ENABLED: "Enable HTTP Proxy",
   SETTING_PROXY_HOST: "HTTP Proxy Host",
